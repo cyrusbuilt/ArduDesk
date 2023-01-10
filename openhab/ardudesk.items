@@ -1,0 +1,9 @@
+String ArduDeskSystemID "System ID: [%s]" <keyring> { channel="mqtt:topic:mosquitto:ardudesk:SysID" }
+String ArduDeskVersion "Firmware version: [%s]" { channel="mqtt:topic:mosquitto:ardudesk:Version" }
+Number ArduDeskSysState <status> { channel="mqtt:topic:mosquitto:ardudesk:SysState" }
+String ArduDeskSystemCommand "Actions" <switch>
+
+String ArduDeskState "Desk State: [%s]" <office> { channel="mqtt:topic:mosquitto:ardudesk:DeskState" }
+Number ArduDeskHeight "Desk Height: [%s]" <incline> { channel="mqtt:topic:mosquitto:ardudesk:DeskHeight" }
+Number ArduDeskControl <movecontrol>
+Number ArduDeskSetHeight "Set Desk Height:"

@@ -1,0 +1,17 @@
+.pio
+
+# VSCode stuff
+.vscode
+
+# Don't need these yet
+lib/
+test/
+
+# macOS crap
+.DS_Store
+
+# Zip Archives
+*.zip
+
+# Backup files
+*.bak

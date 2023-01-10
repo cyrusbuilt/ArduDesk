@@ -1,0 +1,8 @@
+Thing mqtt:topic:mosquitto:ardudesk "MQTT Thing ArduDesk" (mqtt:broker:mosquitto) @ "ArduDesk" {
+	Channels:
+		Type string : Version [stateTopic="ardudesk/status", transformationPattern="JSONPATH:$.firmwareVersion"]
+		Type number : SysState [stateTopic="ardudesk/status", transformationPattern="JSONPATH:$.systemState"]
+		Type string : SysID [stateTopic="ardudesk/status", transformationPattern="JSONPATH:$.clientId"]
+		Type string : DeskState [stateTopic="ardudesk/status", transformationPattern="JSONPATH:$.state"]
+		Type number : DeskHeight [stateTopic="ardudesk/status", transformationPattern="JSONPATH:$.height"]
+}

@@ -1,0 +1,45 @@
+val String fileName = "ardudesk.rules"
+val String controlTopic = "ardudesk/control"
+val actionsBroker = getActions("mqtt", "mqtt:broker:mosquitto")
+var String cmd = ""
+var String jsonString = ""
+
+rule "ArduDesk Send System Command"
+when
+	Item ArduDeskSystemCommand received command
+then
+	cmd = receivedCommand.toString()
+	logInfo(fileName, "ArduDesk action received command: " + cmd)
+	jsonString = "{\"clientId\":\"ARDUDESK\",\"command\":" + cmd + "}"
+	logInfo(fileName, "Publishing MQTT payload: " + jsonString)
+	actionsBroker.publishMQTT(controlTopic, jsonString)
+	ArduDeskSystemCommand.postUpdate(NULL)
+	jsonString = ""
+	cmd = ""
+end
+
+rule "ArduDesk Movement Control"
+when
+	Item ArduDeskControl changed
+then
+	if (ArduDeskControl.state !== NULL) {
+		cmd = ArduDeskControl.state.toString()
+		jsonString = "{\"clientId\":\"ARDUDESK\",\"command\":" + cmd + "}"
+		logInfo(fileName, "Publishing MQTT payload: " + jsonString)
+		actionsBroker.publishMQTT(controlTopic, jsonString)
+		ArduDeskControl.postUpdate(NULL)
+		jsonString = ""
+		cmd = ""
+	}
+end
+
+rule "ArduDesk Height Setpoint Changed"
+when
+	Item ArduDeskSetHeight changed
+then
+	var height = ArduDeskSetHeight.state.toString()
+	jsonString = "{\"clientId\":\"ARDUDESK\",\"command\":4,\"requestedHeight\":" + height + "}"
+	logInfo(fileName, "Publishing MQTT payload: " + jsonString)
+	actionsBroker.publishMQTT(controlTopic, jsonString)
+	jsonString = ""
+end
