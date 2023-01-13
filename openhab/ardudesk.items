@@ -7,3 +7,7 @@ String ArduDeskState "Desk State: [%s]" <office> { channel="mqtt:topic:mosquitto
 Number ArduDeskHeight "Desk Height: [%s]" <incline> { channel="mqtt:topic:mosquitto:ardudesk:DeskHeight" }
 Number ArduDeskControl <movecontrol>
 Number ArduDeskSetHeight "Set Desk Height:"
+Number ArduDeskSittingHeight "Sitting Height Preset: [%s]" { channel="mqtt:topic:mosquitto:ardudesk:SittingHeight" }
+Number ArduDeskSetSittingHeight <wallswitch>
+Number ArduDeskStandingHeight "Standing Height Preset: [%s]" { channel="mqtt:topic:mosquitto:ardudesk:StandingHeight" }
+Number ArduDeskSetStandingHeight <wallswitch>

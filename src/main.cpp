@@ -131,6 +131,8 @@ void publishSystemState() {
         doc["systemState"] = (uint8_t)sysState;
         doc["height"] = UpliftDesk.getHeight();
         doc["state"] = UpliftDesk.getStateString();
+        doc["sittingHeight"] = config.sittingHeight;
+        doc["standingHeight"] = config.standingHeight;
 		
         String jsonStr;
         size_t len = serializeJson(doc, jsonStr);
@@ -229,24 +231,26 @@ void reboot() {
  * @brief Saves the configuration data to the config file.
  */
 void saveConfiguration() {
-    // TODO From the console, need the ability to be able change sitting and standing height,
-    // and persist those settings here, as well as manually activate the desk.
     Serial.print(F("INFO: Saving configuration to "));
     Serial.print(CONFIG_FILE_PATH);
     Serial.println(F(" ... "));
     if (!filesystemMounted) {
         Serial.println(F("FAIL"));
-        Serial.println(F("ERROR: Filesystem not mount."));
+        Serial.println(F("ERROR: Filesystem not mounted."));
         return;
     }
 
-    StaticJsonDocument<350> doc;
+    StaticJsonDocument<400> doc;
     doc["hostname"] = config.hostname;
     doc["useDhcp"] = config.useDhcp;
-    doc["ip"] = config.ip.toString();
-    doc["gateway"] = config.gw.toString();
-    doc["subnetmask"] = config.sm.toString();
-    doc["dnsServer"] = config.dns.toString();
+    IPAddress ipAddr = IPAddress(config.ip);
+    doc["ip"] = ipAddr.toString();
+    ipAddr = IPAddress(config.gw);
+    doc["gateway"] = ipAddr.toString();
+    ipAddr = IPAddress(config.sm);
+    doc["subnetmask"] = ipAddr.toString();
+    ipAddr = IPAddress(config.dns);
+    doc["dnsServer"] = ipAddr.toString();
     doc["wifiSSID"] = config.ssid;
     doc["wifiPassword"] = config.password;
     doc["timezone"] = config.clockTimezone;
@@ -626,6 +630,14 @@ void handleControlRequest(ControlCommand cmd) {
             requestedHeight = config.standingHeight;
             handleMoveRequest();
             break;
+        case ControlCommand::SET_SITTING_HEIGHT:
+            config.sittingHeight = UpliftDesk.getHeight();
+            saveConfiguration();
+            break;
+        case ControlCommand::SET_STANDING_HEIGHT:
+            config.standingHeight = UpliftDesk.getHeight();
+            saveConfiguration();
+            break;
         default:
             Serial.print(F("WARN: Unknown command: "));
             Serial.println((uint8_t)cmd);
@@ -730,6 +742,7 @@ void initMDNS() {
             }
 
             #ifdef ENABLE_OTA
+                mdns.enableArduino(config.otaPort, true);
                 mdns.addService(config.hostname, "ota", config.otaPort);
             #endif
             Serial.println(F(" DONE"));
@@ -1069,6 +1082,79 @@ void handleMqttConfigCommand(String newBroker, int newPort, String newUsername, 
 }
 
 /**
+ * @brief Handler for the set sitting height command from the CLI. Stores the
+ * current height as the sitting height in the running config.
+ */
+void handleSetSittingHeight() {
+    Serial.println(F("=== Set Sitting Height Mode ==="));
+    Serial.println(F("Manually raise/lower desk to desired sitting height and then press ENTER"));
+    Console.waitForUserInput();
+    int16_t currentHeight = UpliftDesk.getHeight();
+    Serial.print(F("Current height = "));
+    Serial.println(currentHeight);
+    Serial.print(F("Use current height [y/n/c]: "));
+    Console.waitForUserInput();
+    String result = Console.getInputString();
+    result.trim();
+    result.toLowerCase();
+    if (result == "y") {
+        config.sittingHeight = currentHeight;
+        Serial.println(F("** Sitting Height applied to running config."));
+        Console.enterCommandInterpreter();
+    }
+    else if (result == "c") {
+        Console.enterCommandInterpreter();
+    }
+    else {
+        handleSetSittingHeight();
+    }
+}
+
+/**
+ * @brief Handler for the set standing height command in the CLI. Stores the
+ * current height as the standing height in the running config.
+ */
+void handleSetStandingHeight() {
+    Serial.println(F("=== Set Standing Height Mode ==="));
+    Serial.println(F("Manually raise/lower desk to desired standing height and then press ENTER"));
+    Console.waitForUserInput();
+    int16_t currentHeight = UpliftDesk.getHeight();
+    Serial.print(F("Current height = "));
+    Serial.println(currentHeight);
+    Serial.print(F("Use current height [y/n/c]: "));
+    Console.waitForUserInput();
+    String result = Console.getInputString();
+    result.trim();
+    result.toLowerCase();
+    if (result == "y") {
+        config.standingHeight = currentHeight;
+        Serial.println(F("** Standing Height applied to running config."));
+        Console.enterCommandInterpreter();
+    }
+    else if (result == "c") {
+        Console.enterCommandInterpreter();
+    }
+    else {
+        handleSetSittingHeight();
+    }
+}
+
+/**
+ * @brief Handler for the stop command in the CLI. Immediately stops desk
+ * movement.
+ */
+void handleStop() {
+    Serial.println(F("Requesting desk stop... "));
+    UpliftDesk.stop();
+    while (UpliftDesk.getState() != DeskState::STOPPED) {
+        ESPCrashMonitor.iAmAlive();
+        delay(5);
+    }
+    Serial.println(F("*** Movement Stopped ***"));
+    Console.enterCommandInterpreter();
+}
+
+/**
  * @brief Initializes the console interface (CLI).
  */
 void initConsole() {
@@ -1095,6 +1181,9 @@ void initConsole() {
     Console.onMqttConfigCommand(handleMqttConfigCommand);
     Console.onConsoleInterrupt(failSafe);
     Console.onResumeCommand(resumeNormal);
+    Console.onSetSittingHeight(handleSetSittingHeight);
+    Console.onSetStandingHeight(handleSetStandingHeight);
+    Console.onStop(handleStop);
 
     Serial.println(F("DONE"));
 }

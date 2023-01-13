@@ -5,4 +5,6 @@ Thing mqtt:topic:mosquitto:ardudesk "MQTT Thing ArduDesk" (mqtt:broker:mosquitto
 		Type string : SysID [stateTopic="ardudesk/status", transformationPattern="JSONPATH:$.clientId"]
 		Type string : DeskState [stateTopic="ardudesk/status", transformationPattern="JSONPATH:$.state"]
 		Type number : DeskHeight [stateTopic="ardudesk/status", transformationPattern="JSONPATH:$.height"]
+		Type number : SittingHeight [stateTopic="ardudesk/status", transformationPattern="JSONPATH:$.sittingHeight"]
+		Type number : StandingHeight [stateTopic="ardudesk/status", transformationPattern="JSONPATH:$.standingHeight"]
 }

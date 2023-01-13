@@ -59,6 +59,18 @@ void ConsoleClass::onFactoryRestore(void (*factoryRestoreHandler)()) {
     this->factoryRestoreHandler = factoryRestoreHandler;
 }
 
+void ConsoleClass::onSetSittingHeight(void (*setSittingHeightHandler)()) {
+    this->setSittingHeightHandler = setSittingHeightHandler;
+}
+
+void ConsoleClass::onSetStandingHeight(void (*setStandingHeightHandler)()) {
+    this->setStandingHeightHandler = setStandingHeightHandler;
+}
+
+void ConsoleClass::onStop(void (*stopHandler)()) {
+    this->stopHandler = stopHandler;
+}
+
 void ConsoleClass::setMqttConfig(String broker, int port, String username, String password, String conChan, String statChan) {
     this->_mqttBroker = broker;
     this->_mqttPort = port;
@@ -235,6 +247,9 @@ void ConsoleClass::displayMenu() {
     Serial.println(F("= g: Get network info        ="));
     Serial.println(F("= f: Save config changes     ="));
     Serial.println(F("= z: Restore default config  ="));
+    Serial.println(F("= a: Set sitting height      ="));
+    Serial.println(F("= b: Set standing height     ="));
+    Serial.println(F("= l: Stop movement           ="));
     Serial.println(F("=                            ="));
     Serial.println(F("=============================="));
     Serial.println();
@@ -330,6 +345,21 @@ void ConsoleClass::checkCommand() {
         case 'z':
             if (this->factoryRestoreHandler != NULL) {
                 this->factoryRestoreHandler();
+            }
+            break;
+        case 'a':
+            if (this->setSittingHeightHandler != NULL) {
+                this->setSittingHeightHandler();
+            }
+            break;
+        case 'b':
+            if (this->setStandingHeightHandler != NULL) {
+                this->setStandingHeightHandler();
+            }
+            break;
+        case 'l':
+            if (this->stopHandler != NULL) {
+                this->stopHandler();
             }
             break;
         default:

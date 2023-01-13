@@ -12,6 +12,10 @@ sitemap ardudesk label="ArduDesk" {
 		Text item=ArduDeskHeight
 		Switch item=ArduDeskControl label="Control" mappings=[5="Stop",6="Sit",7="Stand"]
 		Setpoint item=ArduDeskSetHeight minValue=0 maxValue=256 step=5
+		Text item=ArduDeskSittingHeight
+		Switch item=ArduDeskSetSittingHeight label="Preset Sitting Height" mappings=[8="Set"]
+		Text item=ArduDeskStandingHeight
+		Switch item=ArduDeskSetStandingHeight label="Preset Standing Height" mappings=[9="Set"]
 		Selection item=ArduDeskSystemCommand label="Actions" mappings=[0="Disable",1="Enable",2="Reboot",3="Request Status"]
 	}
 }

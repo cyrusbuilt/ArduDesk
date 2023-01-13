@@ -21,7 +21,7 @@
 #define MQTT_TOPIC_CONTROL "ardudesk/control"   	// MQTT control channel to subscribe to.
 #define MQTT_TOPIC_DISCOVERY "redqueen/config"      // MQTT discovery topic to publish to.
 #define MQTT_BROKER "your_mqtt_broker_ip"           // MQTT broker hostname or IP.
-#define MQTT_PORT 8883                              // MQTT port number.
+#define MQTT_PORT 1883                              // MQTT port number.
 #ifdef ENABLE_OTA
     #include <ArduinoOTA.h>
     #define OTA_HOST_PORT 8266                      // The OTA updater port.

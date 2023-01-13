@@ -27,6 +27,9 @@ public:
     void onMqttConfigCommand(void (*mqttConfigHandler)(String newBroker, int newPort, String newUsername, String newPassword, String newConChan, String newStatChan));
     void onConsoleInterrupt(void (*interruptHandler)());
     void onFactoryRestore(void (*factoryRestoreHandler)());
+    void onSetSittingHeight(void (*setSittingHeightHandler)());
+    void onSetStandingHeight(void (*setStandingHeightHandler)());
+    void onStop(void (*stopHandler)());
     void checkInterrupt();
 
 private:
@@ -49,6 +52,9 @@ private:
     void (*mqttChangeHandler)(String newBroker, int newPort, String newUsername, String newPass, String newConChan, String newStatChan);
     void (*interruptHandler)();
     void (*factoryRestoreHandler)();
+    void (*setSittingHeightHandler)();
+    void (*setStandingHeightHandler)();
+    void (*stopHandler)();
     
     String _hostname;
     String _mqttBroker;

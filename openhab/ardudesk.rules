@@ -43,3 +43,33 @@ then
 	actionsBroker.publishMQTT(controlTopic, jsonString)
 	jsonString = ""
 end
+
+rule "Preset Sitting Height"
+when
+	Item ArduDeskSetSittingHeight received command
+then
+	cmd = receivedCommand.toString()
+	logInfo(fileName, "Received command: " + cmd)
+	
+	jsonString = "{\"clientId\":\"ARDUDESK\",\"command\":" + cmd + "}"
+	logInfo(fileName, "Publishing MQTT payload: " + jsonString)
+	actionsBroker.publishMQTT(controlTopic, jsonString)
+	ArduDeskSetSittingHeight.postUpdate(NULL)
+	jsonString = 
+	cmd = ""
+end
+
+rule "Preset Standing Height"
+when
+	Item ArduDeskSetStandingHeight received command
+then
+	cmd = receivedCommand.toString()
+	logInfo(fileName, "Received command: " + cmd)
+	
+	jsonString = "{\"clientId\":\"ARDUDESK\",\"command\":" + cmd + "}"
+	logInfo(fileName, "Publishing MQTT payload: " + jsonString)
+	actionsBroker.publishMQTT(controlTopic, jsonString)
+	ArduDeskSetStandingHeight.postUpdate(NULL)
+	jsonString = ""
+	cmd = ""
+end

@@ -77,7 +77,17 @@ enum class ControlCommand: uint8_t {
      * @brief Move to the preferred standing height.
      * 
      */
-    STAND = 7
+    STAND = 7,
+
+    /**
+     * @brief Set the current height as the sitting height preset.
+     */
+    SET_SITTING_HEIGHT = 8,
+
+    /**
+     * @brief Set the current height as the standing height preset.
+     */
+    SET_STANDING_HEIGHT = 9
 };
 
 /**
